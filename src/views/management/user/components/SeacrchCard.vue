@@ -23,12 +23,12 @@
 </template>
 
 <script setup lang="ts">
-  import { ref, reactive,defineEmits } from 'vue';
-  import { Input, Button } from 'ant-design-vue';
+  import { reactive, defineEmits } from 'vue';
+  // import { Input, Button } from 'ant-design-vue';
   import { Option } from './data';
   const opt = reactive<Option>({
-    nameValue: '',
-    telValue: '11',
+    nameValue: '涛',
+    telValue: '1',
   });
 
   //返回初始值
@@ -39,9 +39,9 @@
   };
 
   // 查询函数
-  const emit = defineEmits(['commit-opt'])
+  const emit = defineEmits(['commit-opt']);
   const commitOpt = () => {
-    emit('commit-opt',opt)
+    emit('commit-opt', opt);
   };
 </script>
 

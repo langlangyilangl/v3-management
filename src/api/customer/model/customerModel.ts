@@ -1,9 +1,9 @@
-export type Option = {
-  nameValue: string;
-  telValue: string;
+export type AllCustomerParams = {
+  page: number;
+  size: number;
 };
 
-export type ItemCustomer = {
+type ItemCustomer = {
   customerId: number;
   customerName: string;
   customerType: string;
@@ -17,4 +17,16 @@ export type ItemCustomer = {
   handName: string;
   handCompany: string;
   promisePrice: number;
+};
+
+type AllCustomerData = {
+  list: ItemCustomer[];
+  total: number;
+};
+
+export type AllCustomerResultModel = {
+  code: number;
+  message: string;
+  data: AllCustomerData;
+  role?: any;
 };
