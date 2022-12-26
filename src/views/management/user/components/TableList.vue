@@ -123,12 +123,6 @@
     },
   });
 
-  // const pageData = reactive({
-  //   total: InitPageData.total,
-  //   page: InitPageData.page,
-  //   size: InitPageData.size,
-  // });
-
   const pagination = computed(() => ({
     total: data.pagination.total,
     current: data.pagination.page,
@@ -167,7 +161,6 @@
   //发送请求函数
   const sendRequestTableList = async () => {
     const resData = await getAllCustomerInfo(data.pagination);
-    console.log(resData.data);
 
     data.pagination.total = resData.data.total; //将总共有多少条数据赋值
     data.customerList = resData.data.list.map((item, index) => {
@@ -179,13 +172,12 @@
   // 暴露改变页数的函数给父组件（用父组件的参数）
   defineExpose({
     handleTableChangeExpose: async (pag) => {
-      // console.log(pag);
       //注意每次模糊搜索需要将初始化页面和每页大小
       data.pagination.size = InitPageData.size;
-      data.pagination.page - InitPageData.page;
-
+      data.pagination.page = InitPageData.page;
       data.pagination.customerName = pag.nameValue ?? '';
-      data.pagination.tel = pag.tel ?? '';
+      data.pagination.tel = pag.telValue ?? '';
+
       sendRequestTableList();
     },
   });
