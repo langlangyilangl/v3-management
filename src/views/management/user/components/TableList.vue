@@ -1,6 +1,19 @@
 <template>
   <div class="flex flex-col m-5 p-4 bg-white">
-    <div class="text-lg">用户列表</div>
+    <div class="flex flex-row justify-between items-center mb-4">
+      <div class="text-lg">用户列表</div>
+
+      <div class="flex flex-row items-center space-x-4">
+        <a-button type="primary" @click="data.isDialog = true">新增用户</a-button>
+        <Divider type="vertical" />
+        <RedoOutlined
+          :style="{ fontSize: '20px', color: '#000' }"
+          class="cursor-pointer"
+          @click="sendRequestTableList"
+        />
+      </div>
+    </div>
+
     <Table
       :columns="columns"
       :data-source="data.customerList"
@@ -25,16 +38,24 @@
         </span>
       </template>
     </Table>
+
+    <Load v-if="data.isLoading" />
+    <Dialog v-if="data.isDialog" @closeDialog="cancelDialog" @sureButton="commitList">
+      <AddCustomerForm ref="getExposeAddCustomer" />
+    </Dialog>
   </div>
 </template>
 
 <script setup lang="ts">
-  import { DownOutlined } from '@ant-design/icons-vue';
+  import { DownOutlined, RedoOutlined } from '@ant-design/icons-vue';
   // import { TableState } from 'ant-design-vue/es/table/interface';
-  import { Table } from 'ant-design-vue';
-  import { computed, reactive } from 'vue';
+  import { Table, Divider } from 'ant-design-vue';
+  import { computed, reactive, ref } from 'vue';
   import { getAllCustomerInfo } from '/@/api/customer/customer';
   import { ItemCustomer } from './data';
+  import Load from '/@/components/Load/Load.vue';
+  import Dialog from '/@/components/Dialog/Dialog.vue';
+  import AddCustomerForm from './AddCustomerForm.vue';
 
   // type Pagination = TableState['pagination'];
 
@@ -110,6 +131,8 @@
   type Data = {
     customerList: ItemCustomer[];
     pagination: PaginationData;
+    isLoading: Boolean;
+    isDialog: Boolean;
   };
 
   let data: Data = reactive({
@@ -121,6 +144,8 @@
       tel: '',
       customerName: '',
     },
+    isLoading: false,
+    isDialog: false,
   });
 
   const pagination = computed(() => ({
@@ -160,13 +185,31 @@
 
   //发送请求函数
   const sendRequestTableList = async () => {
+    data.isLoading = true; //打开loading
     const resData = await getAllCustomerInfo(data.pagination);
+    data.isLoading = false; // 关闭loading
 
     data.pagination.total = resData.data.total; //将总共有多少条数据赋值
     data.customerList = resData.data.list.map((item, index) => {
       item['key'] = index;
       return item;
     });
+  };
+
+  // 关闭弹窗
+  const cancelDialog = () => {
+    data.isDialog = false;
+  };
+
+  // 发送提交信息给新增用户页面
+  const getExposeAddCustomer = ref<InstanceType<typeof AddCustomerForm>>();
+  const commitList = () => {
+    /*
+     * 新增用户组件暴露方法，根据返回值看是否要关闭dialog页面
+     * 存在新增错误的情况不关闭
+     */
+    getExposeAddCustomer.value?.commitForm('sss');
+    console.log(getExposeAddCustomer.value);
   };
 
   // 暴露改变页数的函数给父组件（用父组件的参数）
