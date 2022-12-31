@@ -16,5 +16,5 @@ export type ItemCustomer = {
   principalName: string;
   handName: string;
   handCompany: string;
-  promisePrice: number;
+  promisePrice?: number;
 };

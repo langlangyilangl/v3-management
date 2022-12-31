@@ -49,13 +49,14 @@
 <script setup lang="ts">
   import { DownOutlined, RedoOutlined } from '@ant-design/icons-vue';
   // import { TableState } from 'ant-design-vue/es/table/interface';
-  import { Table, Divider } from 'ant-design-vue';
+  import { Table, Divider, message } from 'ant-design-vue';
   import { computed, reactive, ref } from 'vue';
   import { getAllCustomerInfo } from '/@/api/customer/customer';
   import { ItemCustomer } from './data';
   import Load from '/@/components/Load/Load.vue';
   import Dialog from '/@/components/Dialog/Dialog.vue';
   import AddCustomerForm from './AddCustomerForm.vue';
+  import type { AddCustomerResultModel } from '/@/api/customer/model/customerModel';
 
   // type Pagination = TableState['pagination'];
 
@@ -203,13 +204,28 @@
 
   // 发送提交信息给新增用户页面
   const getExposeAddCustomer = ref<InstanceType<typeof AddCustomerForm>>();
-  const commitList = () => {
+  const commitList = async () => {
     /*
      * 新增用户组件暴露方法，根据返回值看是否要关闭dialog页面
      * 存在新增错误的情况不关闭
      */
-    getExposeAddCustomer.value?.commitForm('sss');
-    console.log(getExposeAddCustomer.value);
+    getExposeAddCustomer.value?.commitForm().then(
+      (res: AddCustomerResultModel) => {
+        // 如果成功提交
+        if (res.code === 200) {
+          data.isDialog = false;
+          message.success('新增顾客成功', 3);
+          // 重新刷新用户列表
+          sendRequestTableList();
+        } else {
+          message.error(`${res.message}`, 3);
+        }
+      },
+      (rej) => {
+        //如果是格式错误的情况
+        message.error(`${rej.errorFields[0].errors[0]}后再提交`, 3);
+      },
+    );
   };
 
   // 暴露改变页数的函数给父组件（用父组件的参数）

@@ -1,14 +1,20 @@
 <template>
   <div>
-    <Form :model="formState" :label-col="labelCol" :wrapper-col="wrapperCol" :rules="rules">
+    <Form
+      :model="formState"
+      :label-col="labelCol"
+      :wrapper-col="wrapperCol"
+      :rules="rules"
+      ref="formRef"
+    >
       <FormItem label="姓名" name="customerName">
         <Input v-model:value="formState.customerName" />
       </FormItem>
       <FormItem label="类型">
         <RadioGroup v-model:value="formState.customerType">
-          <Radio value="1">个人</Radio>
-          <Radio value="2">供应商</Radio>
-          <Radio value="2">工厂</Radio>
+          <Radio value="person">个人</Radio>
+          <Radio value="supplier">供应商</Radio>
+          <Radio value="factory">工厂</Radio>
         </RadioGroup>
       </FormItem>
       <FormItem label="电话" name="tel">
@@ -41,12 +47,16 @@
 
 <script setup lang="ts">
   import { Form, FormItem, Input, Radio, RadioGroup } from 'ant-design-vue';
-  import { Moment } from 'moment';
-  import { reactive, UnwrapRef } from 'vue';
+  // import { Moment } from 'moment';
+  import moment from 'moment';
+  import { reactive, UnwrapRef, ref } from 'vue';
+  import { ValidateErrorEntity } from 'ant-design-vue/es/form/interface';
+  import { addOneCustomer } from '/@/api/customer/customer';
+
   interface FormState {
     customerName: string;
     customerType: 'factory' | 'supplier' | 'person' | undefined;
-    registerDate: Moment | undefined;
+    registerDate: string | undefined;
     tel: string;
     cardId: string;
     bankNumber: string;
@@ -57,15 +67,24 @@
     handCompany: string;
   }
   const formState: UnwrapRef<FormState> = reactive({
-    customerName: '',
-    customerType: undefined,
+    customerName: '喻浪',
+    customerType: 'person',
     registerDate: undefined,
-    tel: '',
-    cardId: '',
-    bankNumber: '',
-    bankName: '',
+    tel: '17388916693',
+    cardId: '43012420000304327x',
+    bankNumber: '6212261904004468916',
+    bankName: '工商银行',
     otherTel: '',
     principalName: '',
+    // customerName: '',
+    // customerType: undefined,
+    // registerDate: undefined,
+    // tel: '',
+    // cardId: '',
+    // bankNumber: '',
+    // bankName: '',
+    // otherTel: '',
+    // principalName: '',
     handName: '喻湘宁',
     handCompany: '老喻回收',
   });
@@ -122,9 +141,24 @@
     ],
   };
 
+  // 判断表单是否符合规范才可以提交
+  const formRef = ref();
   defineExpose({
-    commitForm: async (name) => {
-      console.log(name);
+    commitForm: async () => {
+      return new Promise((resolve, reject) => {
+        formRef.value
+          .validate()
+          .then(async () => {
+            // 获取现在时间为注册时间
+            formState.registerDate = moment().format();
+            const res = await addOneCustomer(formState);
+            resolve(res);
+          })
+          .catch((error: ValidateErrorEntity<FormState>) => {
+            console.log('error', error);
+            reject(error);
+          });
+      });
     },
   });
 </script>

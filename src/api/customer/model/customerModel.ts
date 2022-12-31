@@ -16,7 +16,7 @@ type ItemCustomer = {
   principalName: string;
   handName: string;
   handCompany: string;
-  promisePrice: number;
+  promisePrice?: number;
 };
 
 type AllCustomerData = {
@@ -29,4 +29,24 @@ export type AllCustomerResultModel = {
   message: string;
   data: AllCustomerData;
   role?: any;
+};
+
+export type AddCustomerResultModel = {
+  code: 200;
+  message: string;
+  role?: any;
+};
+
+export type AddItemCustomer = {
+  customerName: string;
+  customerType: 'factory' | 'supplier' | 'person' | undefined;
+  registerDate: string | undefined;
+  tel: string;
+  cardId: string;
+  bankNumber: string;
+  bankName: string;
+  otherTel: string;
+  principalName: string;
+  handName: string;
+  handCompany: string;
 };
