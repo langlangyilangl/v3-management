@@ -38,7 +38,6 @@ exports.getAllCustomerInfo = (req, res) => {
     const sql2 =
       'select count(*) as total from customer where customerName like ? and customerName like ?';
     db.query(sql2, [`%${tel ?? ''}%`, `%${customerName ?? ''}%`], (err, result2) => {
-      console.log(result2[0].total);
       data = {
         list: result,
         total: result2[0].total,

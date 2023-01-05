@@ -1,11 +1,12 @@
-const mysql = require('mysql')
-const { host, user, password, database } = require('./conf')
+const mysql = require('mysql');
+const { host, user, password, database, timezone } = require('./conf');
 
 const db = mysql.createPool({
   host,
   user,
   password,
-  database
-})
+  database,
+  timezone,
+});
 
-module.exports = db
+module.exports = db;
